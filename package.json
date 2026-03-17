@@ -1,0 +1,54 @@
+{
+  "name": "image-background-remover",
+  "version": "1.0.0",
+  "description": "A tool for removing backgrounds from images with multiple algorithms",
+  "main": "src/background-remover.js",
+  "bin": {
+    "background-remover": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js",
+    "test": "jest",
+    "dev": "nodemon cli.js",
+    "build": "webpack --mode production",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
+  },
+  "keywords": [
+    "image",
+    "background",
+    "remover",
+    "background-removal",
+    "computer-vision",
+    "opencv",
+    "ai",
+    "machine-learning"
+  ],
+  "author": "Lummyyl",
+  "license": "MIT",
+  "dependencies": {
+    "sharp": "^0.32.0",
+    "jimp": "^0.16.1",
+    "commander": "^11.0.0",
+    "chalk": "^5.3.0",
+    "progress": "^2.0.3"
+  },
+  "devDependencies": {
+    "jest": "^29.6.0",
+    "nodemon": "^3.0.0",
+    "eslint": "^8.45.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lummyyl/image-background-remover.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lummyyl/image-background-remover/issues"
+  },
+  "homepage": "https://github.com/Lummyyl/image-background-remover#readme"
+}

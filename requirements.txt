@@ -1,0 +1,25 @@
+# Python 依赖
+# 如果要使用 Python 版本，请安装这些依赖
+
+# 图像处理
+opencv-python>=4.5.0
+Pillow>=8.0.0
+numpy>=1.21.0
+
+# 机器学习 (可选)
+# tensorflow>=2.8.0
+# torch>=1.12.0
+# torchvision>=0.13.0
+
+# Web 框架 (可选)
+# flask>=2.0.0
+# fastapi>=0.68.0
+# uvicorn>=0.15.0
+
+# CLI 工具
+# click>=8.0.0
+# rich>=10.0.0
+
+# 测试
+# pytest>=6.0.0
+# pytest-cov>=2.12.0
