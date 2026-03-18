@@ -7,10 +7,12 @@
     "background-remover": "./cli.js"
   },
   "scripts": {
-    "start": "node cli.js",
-    "test": "jest",
-    "dev": "nodemon cli.js",
-    "build": "webpack --mode production",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "next build",
+    "export": "next export",
+    "deploy": "wrangler pages deploy dist",
+    "dev:wrangler": "wrangler dev",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix"
   },
@@ -22,7 +24,9 @@
     "computer-vision",
     "opencv",
     "ai",
-    "machine-learning"
+    "machine-learning",
+    "cloudflare-pages",
+    "nextjs"
   ],
   "author": "Lummyyl",
   "license": "MIT",
@@ -31,14 +35,20 @@
     "jimp": "^0.16.1",
     "commander": "^11.0.0",
     "chalk": "^5.3.0",
-    "progress": "^2.0.3"
+    "progress": "^2.0.3",
+    "axios": "^1.6.0",
+    "form-data": "^4.0.0",
+    "express": "^4.18.0",
+    "multer": "^1.4.5"
   },
   "devDependencies": {
     "jest": "^29.6.0",
     "nodemon": "^3.0.0",
     "eslint": "^8.45.0",
     "webpack": "^5.88.0",
-    "webpack-cli": "^5.1.0"
+    "webpack-cli": "^5.1.0",
+    "wrangler": "^3.0.0",
+    "@cloudflare/next-on-pages": "^1.0.0"
   },
   "engines": {
     "node": ">=16.0.0"

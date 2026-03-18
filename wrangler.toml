@@ -1,0 +1,38 @@
+name = "image-background-remover"
+compatibility_date = "2024-01-01"
+
+[env.production]
+pages_build_command = "npm run build"
+pages_dir = "dist"
+
+[env.preview]
+pages_build_command = "npm run build"
+pages_dir = "dist"
+
+[env.development]
+pages_build_command = "npm run build"
+pages_dir = "dist"
+
+# Cloudflare Pages 配置
+[pages]
+project_name = "image-background-remover"
+
+# GitHub 集成配置
+[github_integration]
+enabled = true
+repository_owner = "Lummyyl"
+repository_name = "image-background-remover"
+branch = "main"
+production_branch = "main"
+preview_branch = "dev"
+
+# 环境变量
+[env.production.vars]
+NODE_ENV = "production"
+CLOUDFLARE_ACCOUNT_ID = "5ba5d00473f4b1a1a48d419ba30785c4"
+CLOUDFLARE_API_TOKEN = "ddQ0cW2u88QArvAIGm4bTFO2ldnNzwJHIxqrF4QS"
+
+[env.preview.vars]
+NODE_ENV = "development"
+CLOUDFLARE_ACCOUNT_ID = "5ba5d00473f4b1a1a48d419ba30785c4"
+CLOUDFLARE_API_TOKEN = "ddQ0cW2u88QArvAIGm4bTFO2ldnNzwJHIxqrF4QS"

@@ -1,0 +1,6 @@
+{
+  "removeBgApiKey": "NR6A5rLUCEkNykgRyivU1MXu",
+  "defaultAlgorithm": "edge-detection",
+  "defaultThreshold": 0.5,
+  "defaultFeathering": 2
+}

@@ -6,6 +6,8 @@
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs').promises;
+const axios = require('axios');
+const FormData = require('form-data');
 
 /**
  * 背景移除器类
@@ -13,9 +15,10 @@ const fs = require('fs').promises;
 class BackgroundRemover {
   constructor(options = {}) {
     this.options = {
-      algorithm: 'edge-detection', // edge-detection, color-based, ml-based
+      algorithm: 'edge-detection', // edge-detection, color-based, ml-based, remove-bg
       threshold: 0.5,
       feathering: 2,
+      removeBgApiKey: '', // Remove.bg API Key
       ...options
     };
   }
@@ -39,23 +42,25 @@ class BackgroundRemover {
       console.log(`图片信息: ${metadata.width}x${metadata.height}, ${metadata.format}`);
 
       // 根据算法处理
-      let result;
       switch (finalOptions.algorithm) {
         case 'edge-detection':
           result = await this.edgeDetectionMethod(inputImage, metadata);
+          await result.toFile(outputPath);
           break;
         case 'color-based':
           result = await this.colorBasedMethod(inputImage, metadata);
+          await result.toFile(outputPath);
           break;
         case 'ml-based':
           result = await this.mlBasedMethod(inputImage, metadata);
+          await result.toFile(outputPath);
+          break;
+        case 'remove-bg':
+          await this.removeBgMethod(inputPath, outputPath);
           break;
         default:
           throw new Error(`未知的算法: ${finalOptions.algorithm}`);
       }
-
-      // 保存结果
-      await result.toFile(outputPath);
       console.log(`背景移除完成: ${outputPath}`);
 
     } catch (error) {
@@ -83,7 +88,7 @@ class BackgroundRemover {
 
     // 创建蒙版
     const mask = await sharp(edges)
-      .threshold(this.options.threshold * 255)
+      .threshold(Math.round(this.options.threshold * 255))
       .toBuffer();
 
     // 应用蒙版
@@ -103,7 +108,7 @@ class BackgroundRemover {
     // 创建蒙版（简化版本）
     // 在实际应用中，这里会分析背景颜色并创建精确的蒙版
     const mask = await sharp(rgba)
-      .threshold(this.options.threshold * 255)
+      .threshold(Math.round(this.options.threshold * 255))
       .toBuffer();
 
     return inputImage.composite([{
@@ -119,6 +124,77 @@ class BackgroundRemover {
     // 这里可以集成 TensorFlow.js 或其他 ML 模型
     console.log('ML 方法暂未实现，使用边缘检测替代');
     return this.edgeDetectionMethod(inputImage, metadata);
+  }
+
+  /**
+   * 使用 Remove.bg API 移除背景
+   */
+  async removeBgMethod(inputPath, outputPath) {
+    if (!this.options.removeBgApiKey) {
+      throw new Error('Remove.bg API Key 未配置');
+    }
+
+    try {
+      console.log('使用 Remove.bg API 处理图片...');
+      console.log('API Key:', this.options.removeBgApiKey.substring(0, 8) + '...');
+      
+      // 创建 FormData
+      const formData = new FormData();
+      
+      // 读取图片文件并添加到 FormData
+      const imageBuffer = await fs.readFile(inputPath);
+      const imageStats = await fs.stat(inputPath);
+      
+      formData.append('image_file', imageBuffer, {
+        filename: path.basename(inputPath),
+        contentType: 'image/jpeg'  // 保持原始图片格式
+      });
+      
+      // 添加其他参数
+      formData.append('size', 'auto');
+      formData.append('type', 'auto');
+      formData.append('format', 'png');
+      formData.append('crop', 'false');
+      
+      console.log(`图片大小: ${imageStats.size} bytes`);
+      
+      // 调用 Remove.bg API
+      const response = await axios.post(
+        'https://api.remove.bg/v1.0/removebg',
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+            'X-Api-Key': this.options.removeBgApiKey
+          },
+          responseType: 'arraybuffer',
+          timeout: 60000  // 60秒超时
+        }
+      );
+
+      // 检查响应状态
+      if (response.status !== 200) {
+        throw new Error(`Remove.bg API 返回状态码: ${response.status}`);
+      }
+
+      // 检查响应数据
+      if (!response.data || response.data.byteLength === 0) {
+        throw new Error('Remove.bg API 返回空数据');
+      }
+
+      // 保存处理后的图片
+      await fs.writeFile(outputPath, Buffer.from(response.data));
+      console.log(`Remove.bg 处理完成: ${outputPath}`);
+      console.log(`输出文件大小: ${Buffer.from(response.data).length} bytes`);
+
+    } catch (error) {
+      console.error('Remove.bg API 调用失败:', error.message);
+      if (error.response) {
+        console.error('错误响应:', error.response.status);
+        console.error('错误数据:', error.response.data?.toString?.() || error.response.data);
+      }
+      throw error;
+    }
   }
 
   /**
